@@ -1,0 +1,22 @@
+# Python bytecode (archivos temporales de ejecución)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments (entornos virtuales)
+.venv/
+env/
+venv/
+ENV/
+
+# Databases (No queremos subir la base de datos real a Git por seguridad)
+*.db
+*.sqlite3
+
+# OS generated files (basura del sistema operativo)
+.DS_Store
+Thumbs.db
+
+# User specific files
+.env
+.vscode/
