@@ -30,4 +30,21 @@ def calculate_overtime(total_hours):
     if total_hours > 8:
         extra_hours = total_hours - 8
         normal_hours = 8
+    else:
+        normal_hours = total_hours
+
     return normal_hours, extra_hours
+
+def split_night_hours(start_hour, end_hour):
+    night_start = 21
+
+    if end_hour < start_hour:
+        actual_end = end_hour + 24
+    else:
+        actual_end = end_hour
+
+    calculation_start = max(start_hour, night_start)
+
+    night_hours = actual_end - calculation_start
+
+    return max(0, night_hours)
