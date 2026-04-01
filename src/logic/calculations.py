@@ -1,50 +1,48 @@
-from enum import IntEnum
 from datetime import datetime, timedelta
+from enum import IntEnum
 
 class RecordStatus(IntEnum):
     PENDING = 1
     APPROVED = 2
     REJECTED = 3
 
-def calculate_duration(start_str, end_str):
-    """
-    Calcula la duración entre dos horas en formato HH:MM.
-    Maneja automáticamente el cruce de medianoche.
-    """
-    fmt = "%H:%M"
-    # Convertimos los strings a objetos de tiempo
-    start = datetime.strptime(start_str, fmt)
-    end = datetime.strptime(end_str, fmt)
-    
-    # Si la hora de fin es menor a la de inicio, 
-    # asumimos que es el día siguiente.
-    if end < start:
-        end += timedelta(days=1)
-    
-    duration = end - start
-    # Devolvemos el total en horas (float) para facilitar cálculos de nómina
-    return duration.total_seconds() / 3600
+class ShiftCalculator:
+    def __init__(self):
+        self.night_start_hour = 19
+        self.night_end_hour = 6
+        self.legal_day_hours = 8
 
-def calculate_overtime(total_hours):
-    extra_hours = 0
-    if total_hours > 8:
-        extra_hours = total_hours - 8
-        normal_hours = 8
-    else:
-        normal_hours = total_hours
+    def _get_night_window(self, start_dt, end_dt):
+        n_start = start_dt.replace(hour=self.night_start_hour, minute=0, second=0, microsecond=0)
+        n_end = end_dt.replace(hour=self.night_end_hour, minute=0, second=0, microsecond=0)
+        return n_start, n_end
 
-    return normal_hours, extra_hours
+    def calculate_shift(self, start_dt, end_dt):
+        """Manager: Orquesta todo el proceso"""
+        total = self.calculate_total_duration(start_dt, end_dt)
+        night = self.get_night_hours(start_dt, end_dt)
+        overtime = self.calculate_overtime(total)
+        
+        return {
+            "total": total,
+            "night": night,
+            "overtime": overtime,
+            "status": RecordStatus.PENDING
+        }
 
-def split_night_hours(start_hour, end_hour):
-    night_start = 21
+    def get_night_hours(self, start_dt, end_dt):
+        n_start, n_end = self._get_night_window(start_dt, end_dt)
+        overlap_start = max(start_dt, n_start)
+        overlap_end = min(end_dt, n_end)
+        
+        if overlap_start < overlap_end:
+            diff = overlap_end - overlap_start
+            return diff.total_seconds() / 3600
+        return 0
 
-    if end_hour < start_hour:
-        actual_end = end_hour + 24
-    else:
-        actual_end = end_hour
+    def calculate_total_duration(self, start_dt, end_dt):
+        if end_dt <= start_dt: return 0
+        return (end_dt - start_dt).total_seconds() / 3600
 
-    calculation_start = max(start_hour, night_start)
-
-    night_hours = actual_end - calculation_start
-
-    return max(0, night_hours)
+    def calculate_overtime(self, total_hours):
+        return max(0, total_hours - self.legal_day_hours)

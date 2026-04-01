@@ -1,26 +1,33 @@
-from src.logic.calculations import calculate_overtime
+from datetime import datetime
+from src.logic.calculations import ShiftCalculator
+
+def get_datetime_input(prompt):
+    while True:
+        data = input(prompt)
+        if data.lower() == 'q': return 'q'
+        try:
+            return datetime.strptime(data, "%Y-%m-%d %H:%M")
+        except ValueError:
+            print(" Formato inválido. Usa: AAAA-MM-DD HH:MM")
 
 def main():
-    while True:
-        user_input = input("Enter total hours worked (or 'q' to quit): ")
-        
-        if user_input.lower() == 'q':
-            return # El usuario decidió salir
-            
-        try:
-            total = float(user_input)
-            break
+    calc = ShiftCalculator()
+    print("SISTEMA MURCKY - CÁLCULO DE TURNOS")
 
-        except ValueError:
-            print("Error: Please enter a valid number.")
+    start = get_datetime_input("Entrada (AAAA-MM-DD HH:MM) o 'q': ")
+    if start == 'q': return
+    
+    end = get_datetime_input("Salida (AAAA-MM-DD HH:MM) o 'q': ")
+    if end == 'q': return
 
-    # Aquí sigue el resto del programa...
-    normal, extra = calculate_overtime(total)
-    print(f"Normal: {normal}, Extra: {extra}")
+    report = calc.calculate_shift(start, end)
+
+    print(f"\nRESULTADOS:")
+    print(f"- Total: {report['total']:.2f} hrs")
+    print(f"- Noche: {report['night']:.2f} hrs")
+    print(f"- Extra: {report['overtime']:.2f} hrs")
 
 if __name__ == "__main__":
-    # Solo se ejecuta si corres "python src/main.py"
     main()
-
 
 
