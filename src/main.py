@@ -6,18 +6,18 @@ def get_datetime_input(prompt):
         data = input(prompt)
         if data.lower() == 'q': return 'q'
         try:
-            return datetime.strptime(data, "%Y-%m-%d %H:%M")
+            return datetime.strptime(data, "%Y-%m-%d %I:%M %p")
         except ValueError:
-            print(" Formato inválido. Usa: AAAA-MM-DD HH:MM")
+            print(" Formato inválido. Use: AAAA-MM-DD HH:MM AM/PM")
 
 def main():
     calc = ShiftCalculator()
     print("SISTEMA MURCKY - CÁLCULO DE TURNOS")
 
-    start = get_datetime_input("Entrada (AAAA-MM-DD HH:MM) o 'q': ")
+    start = get_datetime_input("Entrada (AAAA-MM-DD HH:MM AM/PM) o 'q': ")
     if start == 'q': return
     
-    end = get_datetime_input("Salida (AAAA-MM-DD HH:MM) o 'q': ")
+    end = get_datetime_input("Salida (AAAA-MM-DD HH:MM AM/PM) o 'q': ")
     if end == 'q': return
 
     report = calc.calculate_shift(start, end)
