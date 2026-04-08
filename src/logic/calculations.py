@@ -55,14 +55,16 @@ class ShiftCalculator:
         return (end_dt - start_dt).total_seconds() / 3600
 
     def calculate_overtime(scheduled_start, scheduled_end, actual_start, actual_end):
-        diff = 0
         if scheduled_end < scheduled_start:
             scheduled_end += timedelta(days=1)
         if actual_end < actual_start:
             actual_end += timedelta(days=1)
+            
+        diff = 0
 
         overlap_start = max(actual_start, scheduled_start)
         overlap_end = min(actual_end, scheduled_end)
+
 
         if overlap_end > overlap_start:
             if actual_start < scheduled_start:
