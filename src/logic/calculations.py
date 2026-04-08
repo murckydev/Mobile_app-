@@ -27,7 +27,7 @@ class ShiftCalculator:
 
             holiday_hours = total
             normal_overtime = 0
-            night_hours = self.get_night_hours(actual_start, actual_end)
+            night = self.get_night_hours(actual_start, actual_end)
         else:
             holiday_hours = 0
             night = self.get_night_hours(actual_start, actual_end)
@@ -55,7 +55,7 @@ class ShiftCalculator:
         if end_dt <= start_dt: return 0
         return (end_dt - start_dt).total_seconds() / 3600
 
-    def calculate_overtime(scheduled_start, scheduled_end, actual_start, actual_end):
+    def calculate_overtime(self, scheduled_start, scheduled_end, actual_start, actual_end):
         if scheduled_end < scheduled_start:
             scheduled_end += timedelta(days=1)
         if actual_end < actual_start:
