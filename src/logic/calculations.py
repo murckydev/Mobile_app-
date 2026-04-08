@@ -89,23 +89,23 @@ class ShiftCalculator:
     # --- ALL BACKGROUND METHODS ---^
 
     def calculate_shift(self, actual_start, actual_end, scheduled_start, scheduled_end):
+        # 1. Corrección de medianoche (para que no de ceros)
         if actual_end < actual_start:
             actual_end += timedelta(days=1)
-    
-    # Si la salida programada es menor a la entrada programada, sumamos un día
         if scheduled_end < scheduled_start:
             scheduled_end += timedelta(days=1)
 
         total_val = self.calculate_total_duration(actual_start, actual_end)
+        
+        # 2. Calculamos extras y nocturnas FUERA del if, porque ocurren siempre
+        o_hours = self.calculate_overtime(actual_start, actual_end, scheduled_start, scheduled_end)
+        n_hours = self.get_night_hours(actual_start, actual_end)
 
+        # 3. Solo el festivo es condicional
         if self.is_holiday(actual_start):
             h_hours = total_val
-            o_hours = 0
-            n_hours = self.get_night_hours(actual_start, actual_end)
         else:
             h_hours = 0
-            n_hours = self.get_night_hours(actual_start, actual_end)
-            o_hours = self.calculate_overtime(actual_start, actual_end, scheduled_start, scheduled_end)
 
         return {
             "total": total_val,
