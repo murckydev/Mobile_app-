@@ -20,13 +20,23 @@ class ShiftCalculator:
     def calculate_shift(self, start_dt, end_dt):
         """Manager: Orquesta todo el proceso"""
         total = self.calculate_total_duration(start_dt, end_dt)
-        night = self.get_night_hours(start_dt, end_dt)
-        overtime = self.calculate_overtime(total)
-        
+
+        # 1. Es festivo o domingo?
+        if self.is_holiday(start_dt):
+
+            holiday_hours = total
+            normal_overtime = 0
+            night_hours = self.get_night_hours(start_dt, end_dt)
+        else:
+            holiday_hours = 0
+            night = self.get_night_hours(start_dt, end_dt)
+            normal_overtime = self.calculate_overtime(total)
+
         return {
             "total": total,
             "night": night,
-            "overtime": overtime,
+            "overtime": normal_overtime,
+            "holiday": holiday_hours,
             "status": RecordStatus.PENDING
         }
 
@@ -46,3 +56,25 @@ class ShiftCalculator:
 
     def calculate_overtime(self, total_hours):
         return max(0, total_hours - self.legal_day_hours)
+    
+    def verify_schedule(self, scheduled_start, scheduled_end, actual_start, actual_end):
+    # 1. Empezamos asumiendo que todo está bien
+        report = {
+            "is_compliant": True,
+            "late_arrival_minutes": 0,
+            "early_departure_minutes": 0
+        }
+
+        # 2. Verificamos llegada tarde
+        if actual_start > scheduled_start:
+            diff = actual_start - scheduled_start
+            report["late_arrival_minutes"] = diff.total_seconds() / 60
+            report["is_compliant"] = False
+
+        # 3. Verificamos salida temprana
+        if actual_end < scheduled_end:
+            diff = scheduled_end - actual_end
+            report["early_departure_minutes"] = diff.total_seconds() / 60
+            report["is_compliant"] = False
+
+        return report
