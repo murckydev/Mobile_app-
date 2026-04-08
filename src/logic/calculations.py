@@ -89,6 +89,13 @@ class ShiftCalculator:
     # --- ALL BACKGROUND METHODS ---^
 
     def calculate_shift(self, actual_start, actual_end, scheduled_start, scheduled_end):
+        if actual_end < actual_start:
+            actual_end += timedelta(days=1)
+    
+    # Si la salida programada es menor a la entrada programada, sumamos un día
+        if scheduled_end < scheduled_start:
+            scheduled_end += timedelta(days=1)
+
         total_val = self.calculate_total_duration(actual_start, actual_end)
 
         if self.is_holiday(actual_start):
