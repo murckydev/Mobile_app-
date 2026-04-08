@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
                 # 3. Llamar al Manager (el cerebro)
                 # Asegúrate de que tu Manager ya acepte los 4 parámetros
-            results = manager.calculate_shift(scheduled_start, scheduled_end, actual_start, actual_end)
+            results = manager.calculate_shift(actual_start, actual_end, scheduled_start, scheduled_end)
 
                 # 4. Mostrar los resultados de la hoja física
             print("\n" + "="*30)
