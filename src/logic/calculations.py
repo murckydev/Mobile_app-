@@ -11,6 +11,7 @@ class ShiftCalculator:
         self.night_start_hour = 19
         self.night_end_hour = 6
         self.legal_day_hours = 8
+        self.is_holiday = 0
 
     def _get_night_window(self, start_dt, end_dt):
         n_start = start_dt.replace(hour=self.night_start_hour, minute=0, second=0, microsecond=0)
