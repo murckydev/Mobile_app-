@@ -43,26 +43,6 @@ class ShiftCalculator:
         if end_dt <= start_dt: return 0
         return (end_dt - start_dt).total_seconds() / 3600
 
-    def calculate_overtime(self, actual_start, actual_end, scheduled_start, scheduled_end):
-        if scheduled_end < scheduled_start:
-            scheduled_end += timedelta(days=1)
-        if actual_end < actual_start:
-            actual_end += timedelta(days=1)
-            
-        diff = 0
-
-        overlap_start = max(actual_start, scheduled_start)
-        overlap_end = min(actual_end, scheduled_end)
-
-
-        if overlap_end > overlap_start:
-            if actual_start < scheduled_start:
-                diff += (scheduled_start - actual_start).total_seconds() / 3600
-            if actual_end > scheduled_end:
-                diff += (actual_end - scheduled_end).total_seconds() / 3600
-            return diff
-        else:
-            return 0
     
     def verify_schedule(self, scheduled_start, scheduled_end, actual_start, actual_end):
     # 1. Empezamos asumiendo que todo está bien
@@ -98,7 +78,10 @@ class ShiftCalculator:
         total_val = self.calculate_total_duration(actual_start, actual_end)
         
         # 2. Calculamos extras
-        o_hours = self.calculate_overtime(actual_start, actual_end, scheduled_start, scheduled_end)
+        o_hours = 0
+        if actual_end > scheduled_end:
+            diff = actual_end - scheduled_end
+            o_hours += diff.total_seconds() / 3600
 
         n_hours = 0
         h_hours = 0
