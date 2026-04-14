@@ -37,6 +37,7 @@ if __name__ == "__main__":
                 # 3. Llamar al Manager (el cerebro)
                 # Asegúrate de que tu Manager ya acepte los 4 parámetros
             results = manager.calculate_shift(actual_start, actual_end, scheduled_start, scheduled_end)
+            report = manager.verify_schedule(scheduled_start, scheduled_end, actual_start, actual_end)
 
                 # 4. Mostrar los resultados de la hoja física
             print("\n" + "="*30)
@@ -47,6 +48,20 @@ if __name__ == "__main__":
             print(f"Horas Festivas: {results['holiday']:.2f}")
             print("="*30)
             print("\nCálculo completado.")
+
+            print("=" * 30)
+            print("REPORTE DE JORNADA")
+            print("=" * 30)
+
+            if report["is_compliant"]:
+                print("Asistencia: Perfecta")
+            else:
+                print("Asistencia: Incumplimiento detectado")
+                print(f"- Minutos tarde: {report['late_arrival_minutes']}")
+                print(f"- Salida temprana: {report['early_departure_minutes']}")
+
+            print("-" * 30)
+
         except Exception as e:
             print(f"Ocurrió un error inesperado: {e}")
 
