@@ -16,7 +16,7 @@ class ShiftCalculator:
         """Verifica si es domingo (6) o un festivo (por ahora solo domingos)"""
         return dt.weekday() == 6
     
-    def _get_night_window(self, start_dt, end_dt):
+    def _get_night_window(self, start_dt):
         """Define la ventana nocturna de 19:00 a 06:00 del día siguiente"""
         n_start = start_dt.replace(hour=self.night_start_hour, minute=0, second=0, microsecond=0)
         # La noche termina a las 6am del día siguiente
@@ -97,16 +97,23 @@ class ShiftCalculator:
 
         total_val = self.calculate_total_duration(actual_start, actual_end)
         
-        # 2. Calculamos extras y nocturnas FUERA del if, porque ocurren siempre
+        # 2. Calculamos extras
         o_hours = self.calculate_overtime(actual_start, actual_end, scheduled_start, scheduled_end)
-        n_hours = self.get_night_hours(actual_start, actual_end)
+
+        n_hours = 0
+        h_hours = 0
+
+        if o_hours > 0:
+        
+            extra_start = scheduled_end
+            extra_end = actual_end
+
+            n_hours = self.get_night_hours(extra_start, extra_end)
 
         # 3. Solo el festivo es condicional
-        if self.is_holiday(actual_start):
-            h_hours = total_val
-        else:
-            h_hours = 0
-
+            if self.is_holiday(actual_start):
+                h_hours = o_hours
+                
         return {
             "total": total_val,
             "night": n_hours,
@@ -115,4 +122,4 @@ class ShiftCalculator:
             "status": RecordStatus.PENDING
         }
     
-    # --- MANAGER ---^ 
+    # --- MANAGER ---^  
